@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+        <title>Ache o animal</title>
+        <meta name='viewport' content='width=device-width, initial-scale=1'>
+        <link rel='stylesheet' type='text/css' media='screen' href='/css/main.css'>
+    </head>
+    <body>
+        <div class="container">
+            <div class="box">
+                <h1>Ache o animal!</h1>
+                <h2 id="mensagem"></h2>
+                <h3>Mova o mouse ao redor da tela para encontrar o animal. </h3>
+                <button onclick="controller.iniciarJogo()" class='iniciar'>Começar</button>
+            </div>
+        </div>
+        <div id="app">
+        </div>
+        <!-- <script src='/js/main.js'></script> -->
+        <script src='/js/models/Animal.js'></script>
+        <script src='/js/models/AudioJogo.js'></script>
+        <script src='/js/Services/PontuacaoService.js'></script>
+        <script src='/js/Controller/AnimalController.js'></script>
+        <script>
+            const controller = new AnimalController();
+        </script>
+    </body>
+</html>
