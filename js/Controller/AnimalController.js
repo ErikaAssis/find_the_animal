@@ -3,68 +3,121 @@ class AnimalController {
     constructor(){
         const $ = document.querySelector.bind(document);
 
+        // Cria um acesso DOM dos elementos.
         this._divPrincipalElement = $('#app');
-        this._containerElement = $('.container');
+        this._divJogoElement = $('.container');
         this._infoElement = document.createElement('h2');      
     }
 
+    /**
+     * Inicia o jogo após evento de 'click' do usuário.
+     */
     iniciarJogo(){  
-        const findElement = this._insereProcurarAnimal();
+        // Cria o elemento a ser encontrado pelo jogador.
+        const findElement = this._inserirProcurarAnimal();
 
-        this._adicionarElementoFilho(this._divPrincipalElement, AudioJogo.criar('/music/music.mp3', true));
+        // Adiciona à div principal do jogo o áudio padrão do jogo.
+        this._adicionarElementoFilho(this._divPrincipalElement, 
+                                            AudioJogo.criar('/music/music.mp3', true));
+        // Adiciona à div principal do jogo o elemento a ser encontrado
         this._adicionarElementoFilho(this._divPrincipalElement, findElement);
-        this._visibilidadeElemento(true);
+
+        // Altera a visibilidade das divs para o jogo ser iniciado.
+        this._visibilidadeTag(true);
+
+        // Exibe para o jogador a atual pontuação do mesmo.
         this._preencherPontuacao();
 
+        // Evento acionado após o jogador encontrar o elemento escondido.
         findElement.addEventListener('click', () => {
+            // 'Esconde' o elemento escondido
             findElement.style.display = 'none';
-            this._finalJogo();
+
+            this._finalizarJogo();
         });
     }
 
-    _finalJogo(){
+    /**
+     * Finaliza o jogo após o jogador encontrar o elemento escondido;
+     * 
+     */
+    _finalizarJogo(){
+        // Atualiza e exibe a nova pontuação.
         PontuacaoService.setPontuacao();
         this._preencherPontuacao();
+
+        // Exibe a mensagem de final de jogo.
         this._adicionaMensagemFinal();
 
+        // Gera o animal que foi encontrado.
         const animal = this._getAnimal();
         const imgJogoElement= this._gerarImagemAnimal(animal.imagemAnimal);
 
+        // Adiciona a imagem do animal à div principal da aplicação.
         this._adicionarElementoFilho(this._divPrincipalElement, imgJogoElement);
 
+        // Atualiza a música do jogo de acordo com o som caracteristico do animal. 
         AudioJogo.pause();
         AudioJogo.criar(animal.somAnimal);
 
-        setTimeout(this._resetarComponentes.bind(this), 3300);
+        /* Após 3 segundos (tempo necessário para exibir imagem do animal e tocar o 
+        som característico do mesmo) chama a função restartJogo() para voltar 
+        a aplicação para o estado inicial. */
+        setTimeout(this.restartJogo.bind(this), 3300);
     }
 
-    _resetarComponentes(){
-        this._visibilidadeElemento(false);
+    /**
+     * Retorna os componentes ao padrão inicial da aplicação,
+     * e a torna pronta para se jogar novamente.
+     */
+    restartJogo(){
+        this._visibilidadeTag(false);
 
+        // Exclui todos os filhos inseridos na div principal da aplicação.
         while(this._divPrincipalElement.firstChild){
             this._divPrincipalElement.removeChild(this._divPrincipalElement.firstChild);
         }
     }
 
-    _insereProcurarAnimal(){
+    /**
+     * Cria um elemento <div> que será utilizado para ser achado
+     * pelo jogador e atribui estilos css ao mesmo.
+     * Retorna o elemento criado.
+     */
+    _inserirProcurarAnimal(){
         const findElement = document.createElement('div');
 
         findElement.style.width = '70px';
         findElement.style.height = '70px';
         findElement.style.cursor = 'pointer';
-        findElement.style.background = 'black';
+        //findElement.style.background = 'black'; Utilizado apenas na fase de desenvolvimento
+
+        // Define a posição aleatória onde será inserido o elemento.
         findElement.style.top = `${Math.floor(Math.random() * 80)}%`;
         findElement.style.left = `${Math.floor(Math.random() * 90)}%`;
+
         findElement.style.position = 'relative';
 
         return findElement;
     }
 
+    /**
+     * Escolhe aleatoriamente o animal a ser exibido para o jogador ao final do jogo.
+     * Retorna o objeto Animal criado.
+     */
     _getAnimal(){
         const animais = ['leao', 'dog', 'gato', 'bird', 'elefante', 'cow', 'fox', 'dolphin'];
         return new Animal(animais[Math.floor(Math.random() * animais.length)]);
     }
 
+    /**
+     * Cria uma tag imagem <img> contendo a imagem do animal,
+     * cujo src é recebido pelo parâmetro 'caminhoImagem', 
+     * e atribui estilos css à mesma. 
+     * Retorna o elemento imagem criado.
+     * 
+     * @param {String} caminhoImagem 
+     */
     _gerarImagemAnimal(caminhoImagem){
         const imgJogoElement = document.createElement('img');  
 
@@ -79,6 +132,10 @@ class AnimalController {
         return imgJogoElement;
     }
 
+    /**
+     * Preenche o parágrafo <p> infoElement, e o adiciona em divs <div>, 
+     * para assim informar ao jogador a sua atual pontuação no jogo.
+     */
     _preencherPontuacao(){ 
         this._infoElement.innerHTML = `Sua pontuação: ${PontuacaoService.getPontuacao}`;
 
@@ -90,22 +147,38 @@ class AnimalController {
         this._adicionarElementoFilho(this._divPrincipalElement, divInfoElement);
     }
 
+    /**
+     * Cria e exibe uma mensagem para o usuário, informando o final do jogo
+     * e sua atual pontuação.
+     */
     _adicionaMensagemFinal(){
         document.querySelector('#mensagem').innerHTML = 
-        `Você encontrou um animal!<br>Sua atual pontuação é: ${PontuacaoService.getPontuacao}.`
+        `Parabéns, você encontrou um animal!<br>Sua atual pontuação é: ${PontuacaoService.getPontuacao}.`
     }
 
-    _adicionarElementoFilho(elementoPai, elementoFilho){
-        elementoPai.appendChild(elementoFilho);
+    /**
+     * Adiciona um filho à tag html. 
+     * 
+     * @param {Elemento HTML} tagPai 
+     * @param {Elemento HTML} tagFilho 
+     */
+    _adicionarElementoFilho(tagPai, tagFilho){
+        tagPai.appendChild(tagFilho);
     }
 
-    _visibilidadeElemento(condicao){
+    /**
+     * Altera o atributo display das divs <div> de acordo com
+     * a condição recebida como parâmetro.
+     * 
+     * @param {Boolean} condicao 
+     */
+    _visibilidadeTag(condicao){
         if(condicao){
             this._divPrincipalElement.style.display = 'block'; 
-            this._containerElement.style.display = 'none'; 
+            this._divJogoElement.style.display = 'none'; 
         }else{
             this._divPrincipalElement.style.display = 'none'; 
-            this._containerElement.style.display = 'flex'; 
+            this._divJogoElement.style.display = 'flex'; 
         }
     }
 
