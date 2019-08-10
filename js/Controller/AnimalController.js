@@ -90,7 +90,7 @@ class AnimalController {
         findElement.style.width = '70px';
         findElement.style.height = '70px';
         findElement.style.cursor = 'pointer';
-        //findElement.style.background = 'black'; Utilizado apenas na fase de desenvolvimento
+        //findElement.style.background = 'black';// Utilizado apenas na fase de desenvolvimento
 
         // Define a posição aleatória onde será inserido o elemento.
         findElement.style.top = `${Math.floor(Math.random() * 80)}%`;
