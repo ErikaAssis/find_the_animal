@@ -18,7 +18,7 @@ class AnimalController {
     // Adiciona à div principal do jogo o áudio padrão do jogo.
     this._adicionarElementoFilho(
       this._divPrincipalElement,
-      AudioJogo.criar('/music/music.mp3', true)
+      AudioJogo.criar('./music/music.mp3', true)
     );
     // Adiciona à div principal do jogo o elemento a ser encontrado
     this._adicionarElementoFilho(this._divPrincipalElement, findElement);
@@ -47,12 +47,12 @@ class AnimalController {
     PontuacaoService.setPontuacao();
     this._preencherPontuacao();
 
-    // Exibe a mensagem de final de jogo.
-    this._adicionaMensagemFinal();
-
     // Gera o animal que foi encontrado.
     const animal = this._getAnimal();
     const imgJogoElement = this._gerarImagemAnimal(animal.imagemAnimal);
+
+    // Exibe a mensagem de final de jogo.
+    this._adicionaMensagemFinal(animal.nomeAnimal);
 
     // Adiciona a imagem do animal à div principal da aplicação.
     this._adicionarElementoFilho(this._divPrincipalElement, imgJogoElement);
@@ -64,14 +64,14 @@ class AnimalController {
     /* Após 3 segundos (tempo necessário para exibir imagem do animal e tocar o 
         som característico do mesmo) chama a função restartJogo() para voltar 
         a aplicação para o estado inicial. */
-    //setTimeout(this.restartJogo.bind(this), 3300);
+    setTimeout(this._restartJogo.bind(this), 3300);
   }
 
   /**
    * Retorna os componentes ao padrão inicial da aplicação,
    * e a torna pronta para se jogar novamente.
    */
-  restartJogo() {
+  _restartJogo() {
     this._visibilidadeTag(false);
 
     // Exclui todos os filhos inseridos na div principal da aplicação.
@@ -106,14 +106,13 @@ class AnimalController {
    */
   _getAnimal() {
     const animais = [
-      'leao',
-      'dog',
+      'leão',
+      'cachorro',
       'gato',
-      'bird',
+      'passarinho',
       'elefante',
-      'cow',
-      'fox',
-      'dolphin'
+      'vaca',
+      'golfinho'
     ];
     return new Animal(animais[Math.floor(Math.random() * animais.length)]);
   }
@@ -156,12 +155,12 @@ class AnimalController {
    * Cria e exibe uma mensagem para o usuário, informando o final do jogo
    * e sua atual pontuação.
    */
-  _adicionaMensagemFinal() {
+  _adicionaMensagemFinal(animal) {
     document.querySelector(
       '#mensagem'
-    ).innerHTML = `Parabéns, você encontrou um animal!<br>Sua atual pontuação é: ${
+    ).innerHTML = `<br />Parabéns, você encontrou um <span>${animal}</span>!<br>Sua atual pontuação é: <span>${
       PontuacaoService.getPontuacao
-    }.`;
+    }</span>`;
   }
 
   /**
